@@ -34,7 +34,7 @@ class ExchangeRateDb:
             next(file)
             for line in file:
                 line = line.strip().split(',')
-                date_value = line[1].replace(' ', '/')
+                date_value = line[1]
                 close_value = float(line[-2])
                 query = f'insert into btc_usd_exchange_rate values (?, ?)'
                 project = (date_value, close_value)
@@ -42,8 +42,8 @@ class ExchangeRateDb:
 
 
 db = ExchangeRateDb('btc_usd_exchange_rate.db')
-# db.create_exchange_rate_table()
-# db.insert_data_from_csv()
+db.create_exchange_rate_table()
+db.insert_data_from_csv()
 
 
 

@@ -1,9 +1,6 @@
-from flask import jsonify, request
+from flask import jsonify, request, abort
 from api import app
-from get_historical_btc_usd_hourly_data import ExchangeRateDb
-
-database = ExchangeRateDb('btc_usd_exchange_rate.db')
-exchange_rates = database.fetchall(query='select * from btc_usd_exchange_rate ')
+from get_wallet_balance_btc_to_usd import Data
 
 
 @app.route('/', methods=['GET'])
@@ -11,28 +8,18 @@ def home():
     return '''<h1>Historical Exchange Rates (BTC-USD)</h1>'''
 
 
-@app.route('/api/exchange_rates/btc/all', methods=['GET'])
-def api_all():
-    return jsonify(exchange_rates)
-
-
-@app.route('/api/exchange_rates/btc', methods=['GET'])
+@app.route('/api/btc', methods=['GET'])
 def api_id():
     # Check if an date was provided as part of the URL.
     # If date is provided, assign it to a variable.
     # If no date is provided, display an error in the browser.
-    if 'date' in request.args:
-        date = request.args['date']
+    if 'address' in request.args:
+        address = request.args['address']
+        d = Data(address)
+        data = d.plot_hourly_balance_data()
+        return jsonify(data)
     else:
-        return "Error: No id field provided. Please specify an id."
+        return "Error: No address field provided. Please specify an address."
 
-    # Create an empty list for results
-    results = []
 
-    # Loop through the data and match results that fit the requested date.
-    # dates are unique
-    for exchange_rate in exchange_rates:
-        if exchange_rate['date'] == date:
-            results.append(exchange_rate)
 
-    return jsonify(results)

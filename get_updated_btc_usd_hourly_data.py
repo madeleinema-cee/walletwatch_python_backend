@@ -27,7 +27,7 @@ class RetrieveHourlyBTCToUSDData:
         HTTP_request = 'https://api.coindesk.com/v1/bpi/currentprice.json'
         response = requests.get(HTTP_request).json()
         rate = response['bpi']['USD']['rate_float']
-        updated_time = datetime.now().strftime('%Y-%m-%d/%H:00:00')
+        updated_time = datetime.now().strftime('%Y-%m-%d %H:00:00')
 
         query = '''insert into btc_usd_exchange_rate values (?, ?)'''
         project = (updated_time, rate)
