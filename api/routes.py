@@ -16,7 +16,7 @@ def api_id():
     if 'address' in request.args:
         address = request.args['address']
         d = Data(address)
-        data = d.plot_hourly_balance_data()
+        data = d.get_balance_data()
         return jsonify(data)
     else:
         return "Error: No address field provided. Please specify an address."
