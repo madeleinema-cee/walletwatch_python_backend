@@ -4175,6 +4175,9 @@ class Data:
         self.conn = sqlite3.connect('btc_usd_exchange_rate.db')
         self.cursor = self.conn.cursor()
         self.balance_history = {}
+        self.transaction_history = {}
+        self.cost = {}
+        self.btc_balance = None
 
     def execute(self, query, project):
         self.cursor.execute(query, project)
@@ -4200,14 +4203,17 @@ class Data:
 
         for transaction in response['txs']:
             time = dt.datetime.fromtimestamp(transaction['time']).strftime('%Y-%m-%d %H:00:00')
+            self.transaction_history[time] = transaction['result'] / 100000000
             transactions.append(transaction['result'] / 100000000)
             dates.append(time)
         new_dates = dates[:: -1]
         new_transactions = transactions[:: -1]
 
+
         for new_transaction in new_transactions:
             c.append(new_transaction)
             balances.append(sum(c))
+        self.btc_balance = balances[-1]
 
         self.dates_marker = new_dates
 
@@ -4263,9 +4269,13 @@ class Data:
         hourly_balance = self.apply_balance_history_to_everyday()
         results = self.fetchall(self.query)
         d = dict(results)
+
         for date in d.keys():
             if date in hourly_balance:
                 hourly_balance[date] *= float(d[date])
+
+            if date in self.transaction_history:
+                self.cost[date] = float(self.transaction_history[date] * d[date])
         return hourly_balance
 
     def get_balance_data(self):
@@ -4281,7 +4291,12 @@ class Data:
         response = requests.get(HTTP_request).json()
         currency_exchange_rate_usd = response['USD']['15m']
         data['btctousd'] = currency_exchange_rate_usd
-        data['balancehistory'] = self.balance_history
+        data['transactionhistory'] = self.transaction_history
+        total_invested = sum(self.cost.values())
+        data['totalinvested'] = total_invested
+        data['btcbalance'] = self.btc_balance
+
+
 
         # print(data)
         return data
