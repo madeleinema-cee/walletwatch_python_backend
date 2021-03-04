@@ -4163,8 +4163,6 @@ test_result = {
 }
 
 
-
-
 class Data:
     def __init__(self, address):
         self.start_date = dt.datetime(2013, 1, 1, 00, 00)
@@ -4197,9 +4195,8 @@ class Data:
         dates = []
         c = []
         balances = []
-        # HTTP_request = f'https://blockchain.info/rawaddr/{self.address}'
-        # response = requests.get(HTTP_request).json()
-        response = test_result
+        HTTP_request = f'https://blockchain.info/rawaddr/{self.address}'
+        response = requests.get(HTTP_request).json()
 
         for transaction in response['txs']:
             time = dt.datetime.fromtimestamp(transaction['time']).strftime('%Y-%m-%d %H:00:00')
@@ -4208,7 +4205,6 @@ class Data:
             dates.append(time)
         new_dates = dates[:: -1]
         new_transactions = transactions[:: -1]
-
 
         for new_transaction in new_transactions:
             c.append(new_transaction)
@@ -4223,8 +4219,6 @@ class Data:
 
     def find_balance_history(self):
         x, y = self.find_transaction_data()
-
-
         for transaction_date in x:
             for balance in y:
                 self.balance_history[transaction_date] = balance
@@ -4246,27 +4240,18 @@ class Data:
         for single_date in self.generate_days():
             balance[single_date.strftime("%Y-%m-%d %H:00:00")] = 0
 
-        for balance_date in self.balance_history.keys():
-            for date in balance.keys():
-                if balance_date == date:
-                    balance[balance_date] = self.balance_history[balance_date]
-
-        return balance
-
-    def apply_balance_history_to_everyday(self):
-        balance = self.insert_balance_history_to_dates()
-        d = list(balance.keys())
-
-        for date in d[1:]:
-            if balance[date] == 0:
-                last_hour_datetime = dt.datetime.strptime(date, '%Y-%m-%d %H:00:00') - timedelta(hours=1)
-                value = balance[str(last_hour_datetime)]
-                balance[date] = value
-
+        for balance_date in balance.keys():
+            if balance_date in self.balance_history.keys():
+                balance[balance_date] = self.balance_history[balance_date]
+            else:
+                if balance[balance_date] == 0:
+                    last_hour_datetime = dt.datetime.strptime(balance_date, '%Y-%m-%d %H:00:00') - timedelta(hours=1)
+                    value = balance[str(last_hour_datetime)]
+                    balance[balance_date] = value
         return balance
 
     def convert_balance_to_usd(self):
-        hourly_balance = self.apply_balance_history_to_everyday()
+        hourly_balance = self.insert_balance_history_to_dates()
         results = self.fetchall(self.query)
         d = dict(results)
 
@@ -4276,6 +4261,7 @@ class Data:
 
             if date in self.transaction_history:
                 self.cost[date] = float(self.transaction_history[date] * d[date])
+        print(self.cost)
         return hourly_balance
 
     def get_balance_data(self):
@@ -4293,13 +4279,9 @@ class Data:
         data['btctousd'] = currency_exchange_rate_usd
         data['transactionhistory'] = self.transaction_history
         total_invested = sum(self.cost.values())
+
         data['totalinvested'] = total_invested
+
+
         data['btcbalance'] = self.btc_balance
-
-
-
-        # print(data)
         return data
-
-
-
