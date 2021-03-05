@@ -4261,7 +4261,6 @@ class Data:
 
             if date in self.transaction_history:
                 self.cost[date] = float(self.transaction_history[date] * d[date])
-        print(self.cost)
         return hourly_balance
 
     def get_balance_data(self):
@@ -4278,10 +4277,13 @@ class Data:
         currency_exchange_rate_usd = response['USD']['15m']
         data['btctousd'] = currency_exchange_rate_usd
         data['transactionhistory'] = self.transaction_history
-        total_invested = sum(self.cost.values())
-
+        total_invested = sum(value for value in self.cost.values() if value > 0)
+        total_profit_from_selling = abs(sum(value for value in self.cost.values() if value < 0))
+        total_profit = total_profit_from_selling + balance[-1]['y'] - total_invested
+        data['totalprofit'] = total_profit
         data['totalinvested'] = total_invested
-
-
         data['btcbalance'] = self.btc_balance
+        profit_margin = total_profit/total_invested * 100
+        data['profitmargin'] = profit_margin
+
         return data
