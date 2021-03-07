@@ -130,8 +130,6 @@ dmypy.json
 
 .idea/*
 
-comic_wishlist/ExportSqlCE40.zip
-
-comic_wishlist.db
+btc_usd_exchange_rate.db
 
 config.py
