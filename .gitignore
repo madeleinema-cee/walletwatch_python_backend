@@ -130,6 +130,8 @@ dmypy.json
 
 .idea/*
 
-btc_usd_exchange_rate.db
+/helpers/cryptocurrency_exchange_rate.db
 
 config.py
+venv
+node_modules
