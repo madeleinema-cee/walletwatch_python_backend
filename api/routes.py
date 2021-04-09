@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort
 from api import app
-from get_wallet_balance_btc_to_usd import Data
+from get_wallet_balance_btc_to_usd import GettingBTCData
 
 
 @app.route('/', methods=['GET'])
@@ -15,11 +15,11 @@ def api_id():
     # If no date is provided, display an error in the browser.
     if 'address' in request.args:
         address = request.args['address']
-        d = Data(address)
+        d = GettingBTCData(address)
         data = d.get_balance_data()
         return jsonify(data)
     else:
-        return "Error: No address field provided. Please specify an address."
+        return "Error: No information for this address. Please specify a valid address."
 
 
 

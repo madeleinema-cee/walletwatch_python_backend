@@ -15,10 +15,10 @@ class RetrieveHourlyBTCToUSDData:
         HTTP_request2 = 'https://api.etherscan.io/api?module=stats&action=ethprice'
         response2 = requests.get(HTTP_request2).json()
         eth_rate = response2['result']['ethusd']
-        updated_time = datetime.now().strftime('%Y-%m-%d %H:00:00')
+        updated_time = datetime.now().strftime('%Y-%m-%d')
         query = f'''
-        insert into exchange_rate (date, btc_close, eth_close)
-        values ('{updated_time}', '{btc_rate}', '{eth_rate}')
+        insert into btc_exchange_rate (date, btc_close)
+        values ('{updated_time}', '{btc_rate}')
         '''
         self.db.execute(query=query)
 

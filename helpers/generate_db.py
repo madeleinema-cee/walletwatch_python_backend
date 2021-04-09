@@ -1,7 +1,7 @@
 import csv
+from datetime import datetime
 
 from db import ExchangeRateDb
-import pandas as pd
 
 
 class GenerateDatabase:
@@ -15,30 +15,28 @@ class GenerateDatabase:
 
     def create_exchange_rate_table(self):
         query = """
-        create table exchange_rate
-        (date, btc_close, eth_close)
+        create table btc_exchange_rate
+        (date, btc_close)
         """
         self.db.execute(query)
 
     def insert_data_from_csv(self):
-        btc = pd.read_csv('gemini_BTCUSD_day.csv')
-        eth = pd.read_csv('gemini_ETHUSD_day.csv')
-        merged = btc.merge(eth, on='Date')
-        merged.to_csv('exchange_rate.csv', index=False)
+        # eth = pd.read_csv('gemini_ETHUSD_day.csv')
+        # merged = btc.merge(eth, on='Date')
+        # merged.to_csv('exchange_rate.csv', index=False)
 
-        with open('exchange_rate.csv', 'r') as file:
+        with open('gemini_BTCUSD_day.csv', 'r') as file:
             next(file)
             reader1 = csv.reader(file)
             for line in reader1:
-                date = line[1]
+                date = datetime.strptime(line[1], '%Y-%m-%d %H:00:00').strftime('%Y-%m-%d')
                 btc_close = line[6]
-                eth_close = line[-2]
-                self.insert_btc_rate(date, btc_close, eth_close)
+                self.insert_btc_rate(date, btc_close)
 
-    def insert_btc_rate(self, date, btc_close, eth_close):
+    def insert_btc_rate(self, date, btc_close):
         query = f'''
-        insert into exchange_rate (date, btc_close, eth_close)
-        values ('{date}', '{btc_close}', '{eth_close}')
+        insert into btc_exchange_rate (date, btc_close)
+        values ('{date}', '{btc_close}')
         '''
         self.db.execute(query)
 
