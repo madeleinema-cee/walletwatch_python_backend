@@ -3,25 +3,39 @@ from datetime import datetime
 from helpers.db import ExchangeRateDb
 
 
-class RetrieveHourlyBTCToUSDData:
+class RetrieveHourlyCryptoToUSDData:
     def __init__(self):
         self.db_path = 'helpers/cryptocurrency_exchange_rate.db'
         self.db = ExchangeRateDb(self.db_path)
+        self.currency = None
+
+    def main(self):
+        self.retrieve_price_from_api()
 
     def retrieve_price_from_api(self):
-        HTTP_request = 'https://api.coindesk.com/v1/bpi/currentprice.json'
-        response = requests.get(HTTP_request).json()
-        btc_rate = response['bpi']['USD']['rate_float']
-        HTTP_request2 = 'https://api.etherscan.io/api?module=stats&action=ethprice'
-        response2 = requests.get(HTTP_request2).json()
-        eth_rate = response2['result']['ethusd']
+        pass
+
+    def insert_data_to_table(self, exchange_rate):
         updated_time = datetime.now().strftime('%Y-%m-%d')
         query = f'''
-        insert into btc_exchange_rate (date, btc_close)
-        values ('{updated_time}', '{btc_rate}')
+        insert into {self.currency}_exchange_rate (date, '{self.currency}')
+        values ('{updated_time}', '{exchange_rate}')
         '''
         self.db.execute(query=query)
 
 
-h = RetrieveHourlyBTCToUSDData()
-h.retrieve_price_from_api()
+class ETHToUSDData(RetrieveHourlyCryptoToUSDData):
+    def __init__(self):
+        super(ETHToUSDData, self).__init__()
+        self.currency = 'eth'
+        self.api_address = 'https://api.etherscan.io/api?module=stats&action=ethprice'
+
+    def retrieve_price_from_api(self): # this is the btc one
+        exchange_rate = requests.get(self.api_address).json()['bpi']['USD']['rate_float']
+        self.insert_data_to_table(exchange_rate)
+
+
+r = RetrieveHourlyCryptoToUSDData()
+r.retrieve_price_from_api()
+e = ETHToUSDData()
+e.retrieve_price_from_api()
