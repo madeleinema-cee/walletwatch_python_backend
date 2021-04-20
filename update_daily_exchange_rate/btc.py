@@ -1,0 +1,3 @@
+from update_daily_exchange_rate.genuine_retrieve_exchange_rate_class import RetrieveHourlyCryptoToUSDData
+
+class UpdateBTCExchangeRate(RetrieveHourlyCryptoToUSDData):
