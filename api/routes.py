@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort
 from api import app
-from get_wallet_balance_btc_to_usd import GettingBTCData
+from genuine_get_wallet_balance import GettingBTCData
 
 
 @app.route('/', methods=['GET'])

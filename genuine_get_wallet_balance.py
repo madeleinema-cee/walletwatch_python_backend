@@ -2,6 +2,7 @@ import datetime as dt
 from datetime import datetime, timedelta
 import sqlite3
 import requests
+from helpers.db import ExchangeRateDb
 
 test_result = {
     "hash160": "c37988a58f3fef4ddf3bd0eeaf9da6d320080526",
@@ -4163,40 +4164,28 @@ test_result = {
 }
 
 
-class GettingBTCData:
-    def __init__(self, address):
+
+class GettingBalanceData:
+    def __init__(self):
         self.start_date = dt.datetime(2013, 1, 1, 00, 00)
         self.end_date = dt.datetime.now()
-        self.address = address
+        self.address = None
         self.dates_marker = None
-        self.query = 'select * from btc_exchange_rate'
-        self.conn = sqlite3.connect('helpers/cryptocurrency_exchange_rate.db')
-        self.cursor = self.conn.cursor()
+        self.query = None
+        self.db_path = 'helpers/cryptocurrency_exchange_rate.db'
+        self.db = ExchangeRateDb(self.db_path)
+        self.HTTP_request = None
         self.balance_history = {}
         self.transaction_history = {}
         self.cost = {}
         self.btc_balance = None
-
-    def execute(self, query, project):
-        self.cursor.execute(query, project)
-        self.conn.commit()
-
-    def fetchall(self, query):
-        self.cursor.execute(query)
-        self.conn.commit()
-        result = self.cursor.fetchall()
-        return result
-
-    def close(self):
-        self.conn.close()
 
     def find_transaction_data(self):
         transactions = []
         dates = []
         c = []
         balances = []
-        # HTTP_request = f'https://blockchain.info/rawaddr/{self.address}'
-        # response = requests.get(HTTP_request).json()
+        # response = requests.get(self.HTTP_request).json()
         response = test_result
 
         for transaction in response['txs']:
@@ -4254,7 +4243,7 @@ class GettingBTCData:
 
     def convert_balance_to_usd(self):
         hourly_balance = self.insert_balance_history_to_dates()
-        results = self.fetchall(self.query)
+        results = self.db.fetchall(self.query)
         d = dict(results)
 
         for date in d.keys():
@@ -4291,6 +4280,4 @@ class GettingBTCData:
         return data
 
 
-class EthereumData(GettingBTCData):
-    pass
 
