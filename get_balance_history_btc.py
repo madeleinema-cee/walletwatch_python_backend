@@ -7,3 +7,4 @@ class GetBalanceHistoryBTC(GettingBalanceData):
         self.query = 'select * from btc_exchange_rate'
         self.address = address
         self.HTTP_request = f'https://blockchain.info/rawaddr/{self.address}'
+        self.cost = {}
