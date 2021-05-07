@@ -1,5 +1,5 @@
 import requests
-from genuine_retrieve_exchange_rate_class import RetrieveHourlyCryptoToUSDData
+from genetic_retrieve_exchange_rate_class import RetrieveHourlyCryptoToUSDData
 
 
 class UpdateBTCExchangeRate(RetrieveHourlyCryptoToUSDData):

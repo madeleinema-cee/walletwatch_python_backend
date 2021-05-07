@@ -1,4 +1,4 @@
-from genuine_get_wallet_balance import GettingBalanceData
+from genetic_get_wallet_balance import GettingBalanceData
 
 
 class GetBalanceHistoryBTC(GettingBalanceData):

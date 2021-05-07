@@ -14139,28 +14139,18 @@ class GettingBalanceData:
         self.start_date = dt.datetime(2013, 1, 1, 00, 00)
         self.end_date = dt.datetime.now()
         self.address = None
-        self.dates_marker = None
-        self.query = 'select * from btc_exchange_rate'
+        self.query = None
         self.db_path = 'helpers/cryptocurrency_exchange_rate.db'
         self.db = ExchangeRateDb(self.db_path)
         self.HTTP_request = None
-        self.balance_history = {}
         self.transaction_history = {}
         self.cost = {}
-        self.btc_balance = None
+        self.balance = None
+        self.token = None
+        self.HTTP_request_currency_exchange = None
 
-    def find_balance_data(self):
-        # response = requests.get(self.HTTP_request).json()
-        response = test_result
-        self.btc_balance = response['final_balance']
-
-        for balance in reversed(response['txs']):
-            time = dt.datetime.fromtimestamp(balance['time']).strftime('%Y-%m-%d')
-            self.balance_history[time] = balance['balance'] / 100000000
-            self.transaction_history[time] = balance['result'] / 100000000
-
-    def generate_days(self):
-        self.start_date = list(self.balance_history.keys())[0]
+    def generate_days(self, balance_history):
+        self.start_date = list(balance_history.keys())[0]
         delta = timedelta(hours=1)
         new = datetime.strptime(self.start_date, "%Y-%m-%d")
 
@@ -14168,16 +14158,15 @@ class GettingBalanceData:
             yield new
             new += delta
 
-    def insert_balance_history_to_dates(self):
-        self.find_balance_data()
+    def insert_balance_history_to_dates(self, balance_history):
         balance = {}
 
-        for single_date in self.generate_days():
+        for single_date in self.generate_days(balance_history):
             balance[single_date.strftime("%Y-%m-%d")] = None
 
         for balance_date in balance.keys():
-            if balance_date in self.balance_history.keys():
-                balance[balance_date] = self.balance_history[balance_date]
+            if balance_date in balance_history.keys():
+                balance[balance_date] = balance_history[balance_date]
             else:
                 if balance[balance_date] is None:
                     last_day_datetime = (dt.datetime.strptime(balance_date, '%Y-%m-%d')
@@ -14186,43 +14175,39 @@ class GettingBalanceData:
                     balance[balance_date] = value
         return balance
 
-    def convert_balance_to_usd(self):
-        hourly_balance = self.insert_balance_history_to_dates()
+    def convert_balance_to_usd(self, balance_history):
+        hourly_balance = self.insert_balance_history_to_dates(balance_history)
         results = self.db.fetchall(self.query)
 
         for result in results:
             if result['date'] in hourly_balance:
-                hourly_balance[result['date']] *= float(result['btc'])
+                hourly_balance[result['date']] *= float(result[self.token])
 
             if result['date'] in self.transaction_history:
-                self.cost[result['date']] = self.transaction_history[result['date']] * float(result['btc'])
+                self.cost[result['date']] = self.transaction_history[result['date']] * float(result[self.token])
+
         return hourly_balance
 
-    def get_balance_data(self):
+    def get_balance_data(self, balance_history):
         data = {}
         balance = []
-        hourly_balance = self.convert_balance_to_usd()
+        hourly_balance = self.convert_balance_to_usd(balance_history)
         for key, value in hourly_balance.items():
             d = {'x': key, 'y': value}
             balance.append(d)
 
         data['balance'] = balance
-        HTTP_request = 'https://blockchain.info/ticker'
-        response = requests.get(HTTP_request).json()
-        currency_exchange_rate_usd = response['USD']['15m']
-        data['btctousd'] = currency_exchange_rate_usd
+        response = requests.get(self.HTTP_request_currency_exchange).json()
+        currency_exchange_rate_usd = response['USD']
+        data['tousd'] = currency_exchange_rate_usd
         data['transactionhistory'] = self.transaction_history
         total_invested = sum(value for value in self.cost.values() if value > 0)
         total_profit_from_selling = abs(sum(value for value in self.cost.values() if value < 0))
         total_profit = total_profit_from_selling + balance[-1]['y'] - total_invested
-        data['totalprofit'] = total_profit
-        data['totalinvested'] = total_invested
-        data['btcbalance'] = self.btc_balance
+        data['total_profit'] = total_profit
+        data['total_invested'] = total_invested
+        data['final_balance'] = self.balance
         profit_margin = total_profit / total_invested * 100
-        data['profitmargin'] = profit_margin
-        print(data)
+        data['profit_margin'] = profit_margin
+
         return data
-
-
-g = GettingBalanceData()
-g.get_balance_data()

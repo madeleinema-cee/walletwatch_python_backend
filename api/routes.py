@@ -1,25 +1,28 @@
 from flask import jsonify, request, abort
 from api import app
-from genuine_get_wallet_balance import GettingBTCData
+from get_wallet_balance_btc import RetrievingBTCBalanceData
+from get_wallet_balance_eth import RetrievingETHBalanceData
 
 
 @app.route('/', methods=['GET'])
 def home():
-    return '''<h1>Historical Exchange Rates (BTC-USD)</h1>'''
+    return '''<h1>WalletWatch API</h1>'''
 
 
-@app.route('/api/btc', methods=['GET'])
-def api_id():
+@app.route('/api/<string:currency>', methods=['GET'])
+def get_balance_data(currency):
     # Check if an date was provided as part of the URL.
     # If date is provided, assign it to a variable.
     # If no date is provided, display an error in the browser.
     if 'address' in request.args:
         address = request.args['address']
-        d = GettingBTCData(address)
-        data = d.get_balance_data()
-        return jsonify(data)
+        if currency == 'btc':
+            retrieve_btc_data = RetrievingBTCBalanceData(address)
+            data = retrieve_btc_data.retrieve_data_from_api()
+            return jsonify(data)
+        elif currency == 'eth':
+            retrieve_eth_data = RetrievingETHBalanceData(address)
+            data = retrieve_eth_data.retrieve_data_from_api()
+            return jsonify(data)
     else:
         return "Error: No information for this address. Please specify a valid address."
-
-
-
