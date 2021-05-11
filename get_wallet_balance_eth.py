@@ -22,6 +22,7 @@ class RetrievingETHBalanceData(GettingBalanceData):
         balances = []
         for transaction in response['result']:
             time = dt.datetime.fromtimestamp(int(transaction['timeStamp'])).strftime('%Y-%m-%d')
+            print(int(transaction['value'])/ 1000000000000000000)
             transactions.append(int(transaction['value']) / 1000000000000000000)
             balances.append(sum(transactions))
             for balance in balances:
@@ -29,8 +30,9 @@ class RetrievingETHBalanceData(GettingBalanceData):
                 balances.remove(balance)
                 break
             self.transaction_history[time] = int(transaction['value']) / 1000000000000000000
+        print(balance_history)
         self.get_final_balance()
-        self.get_balance_data(balance_history)
+        return self.get_balance_data(balance_history)
 
     def get_final_balance(self):
         HTTP_request = f'https://api.etherscan.io/api?module=account&action=balance&address={self.address}' \
@@ -39,5 +41,4 @@ class RetrievingETHBalanceData(GettingBalanceData):
         self.balance = int(response['result']) / 1000000000000000000
 
 
-retrieve_data = RetrievingETHBalanceData(address='0xA3464c4Bf7bDE44A97703E3a60Fc211C5De9b754')
-retrieve_data.retrieve_data_from_api()
+

@@ -5,7 +5,7 @@ from helpers.db import ExchangeRateDb
 
 class RetrieveHourlyCryptoToUSDData:
     def __init__(self):
-        self.db_path = '../helpers/cryptocurrency_exchange_rate.db'
+        self.db_path = 'helpers/cryptocurrency_exchange_rate.db'
         self.db = ExchangeRateDb(self.db_path)
         self.currency = None
 

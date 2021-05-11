@@ -1,5 +1,5 @@
 import requests
-from genetic_retrieve_exchange_rate_class import RetrieveHourlyCryptoToUSDData
+from update.genetic_retrieve_exchange_rate_class import RetrieveHourlyCryptoToUSDData
 
 
 class UpdateETHExchangeRate(RetrieveHourlyCryptoToUSDData):

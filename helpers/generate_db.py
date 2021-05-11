@@ -5,7 +5,7 @@ from helpers.db import ExchangeRateDb
 
 class GenerateDatabase:
     def __init__(self, currency, file):
-        self.db_path = 'cryptocurrency_exchange_rate.db'
+        self.db_path = 'helpers/cryptocurrency_exchange_rate.db'
         self.db = ExchangeRateDb(self.db_path)
         self.currency = currency
         self.file = file
@@ -43,7 +43,7 @@ class ETHDatabase(GenerateDatabase):
         super().__init__(currency, file)
 
 
-g = GenerateDatabase('btc', 'gemini_BTCUSD_day.csv')
+g = GenerateDatabase('btc', 'helpers/gemini_BTCUSD_day.csv')
 g.main()
-e = ETHDatabase('eth', 'gemini_ETHUSD_day.csv')
+e = ETHDatabase('eth', 'helpers/gemini_ETHUSD_day.csv')
 e.main()

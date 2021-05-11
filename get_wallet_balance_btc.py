@@ -29,7 +29,7 @@ test_result = {
             "inputs": [
                 {
                     "sequence": 4294967295,
-                    "witness": "0400483045022100c7e3d5513f38d34077abd39f9bc0dff049b77ebfbffb81b6569a7007feb4009a022075e11da87490ed52e5f813899e486a39b8189da677f9b74b2f97d5491860e44d0147304402203b756ca02d017ebcb47ec17d145cb2abedf9c0e3b75100467450823b062551d402205d92dcee3ced48e4c379270ff9a5095a5f72ad5ac2934d36f5d1f20fef82d1e20169522102efc9a1fca49eae174c80e29282f35eb2cdc228843949902a2b6c3aa049800fd2210279f795d510086a0e0c2b3777b0cac1ee933cb1ac303a7b53afa501b78c7572a421025f5f834a272b138df75239d57498a887b2b6d45e926a598b9346a1808ae7453c53ae",
+                    "witness": "0400483045022100c7e3d5513f38d34077abd39f9bc0dff049b77ebfbffb81b6569a7007feb4009a022075e11da87490ed52e5f813899e4839b8189da677f9b74b2f97d5491860e44d0147304402203b756ca02d017ebcb47ec17d145cb2abedf9c0e3b75100467450823b062551d402205d92dcee3ced48e4c379270ff9a5095a5f72ad5ac2934d36f5d1f20fef82d1e20169522102efc9a1fca49eae174c80e29282f35eb2cdc228843949902a2b6c3aa049800fd2210279f795d510080e0c2b3777b0cac1ee933cb1ac303a7b53afa501b78c7572a421025f5f834a272b138df75239d57498a887b2b6d45e92598b9341808ae7453c53ae",
                     "script": "2200202b2c27d1de03bfa783e1a45a65dc2774d653e8eb1c4235692e667f72d0e753c3",
                     "index": 0,
                     "prev_out": {
@@ -50,7 +50,7 @@ test_result = {
                 },
                 {
                     "sequence": 4294967295,
-                    "witness": "04004830450221008ec3eaaee908cd65ad4d4f9b41e5984fce165fbbb5eaff691792fad3f4adef0f02204da1a3fd285d18b0782612366f08e4e6a784cb27192db8ac7711df4e6df24f9b01473044022003170f57b176a5b9ea1eb373afed76176f9773c7f3b92c78843740c299deb8f502205e612f3e5bb92ccdd1cd063155f5a3e9161daad66eb45e7401a1bc207427bf2c0169522102f480c11ed289e1c7487ca44f5d7b404f17b2d6e8b912af97b4c68b35afad616d21028de4bca8f7d3bd747ac643408ff4f75348a6379c513e27a4eb5ada14477b9fbc2102ed6fd1a225a7240a409264ebf90091565359cbbe7087cb2eec3689b8177a6e5053ae",
+                    "witness": "04004830450221008ec3eaaee908cd65ad4d4f9b41e5984fce165fbbb5eaff691792fad3f4adef0f02204da1a3fd285d18b0782612366f08e4e784cb27192db8ac7711df4e6df24f9b01473044022003170f57b175b9ea1eb373afed76176f9773c7f3b92c78843740c299deb8f502205e612f3e5bb92ccdd1cd063155f5a3e9161daad66eb45e7401a1bc207427bf2c0169522102f480c11ed289e1c7487ca44f5d7b404f17b2d6e8b912af97b4c68b35afad616d21028de4bca8f7d3bd747ac643408ff4f75348a6379c513e27a4eb5ada14477b9fbc2102ed6fd1a225a7240a409264ebf90091565359cbbe7087cb2eec3689b8177a6e5053ae",
                     "script": "220020738f86524765c2bd6b4b06cde62ce626d9cc068880d6b6e00c231281746e6743",
                     "index": 1,
                     "prev_out": {
@@ -14131,6 +14131,8 @@ test_result = {
         }
     ]
 }
+
+
 class RetrievingBTCBalanceData(GettingBalanceData):
     def __init__(self, address):
         super(RetrievingBTCBalanceData, self).__init__()
@@ -14141,8 +14143,8 @@ class RetrievingBTCBalanceData(GettingBalanceData):
         self.HTTP_request_currency_exchange = 'https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD'
 
     def retrieve_data_from_api(self):
-        # response = requests.get(self.HTTP_request).json()
-        response = test_result
+        response = requests.get(self.HTTP_request).json()
+        # response = test_result
         self.balance = response['final_balance']
         balance_history = {}
         for balance in reversed(response['txs']):
@@ -14150,6 +14152,3 @@ class RetrievingBTCBalanceData(GettingBalanceData):
             balance_history[time] = balance['balance'] / 100000000
             self.transaction_history[time] = balance['result'] / 100000000
         return self.get_balance_data(balance_history)
-
-
-
