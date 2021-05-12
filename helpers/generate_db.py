@@ -26,7 +26,7 @@ class GenerateDatabase:
             next(file)
             reader1 = csv.reader(file)
             for line in reader1:
-                date = datetime.strptime(line[1], '%Y-%m-%d %H:00:00').strftime('%Y-%m-%d')
+                date = datetime.strptime(line[1], '%Y-%m-%d %H:00:00')
                 close = line[6]
                 self.insert_currency_rate(date, close)
 
@@ -43,7 +43,7 @@ class ETHDatabase(GenerateDatabase):
         super().__init__(currency, file)
 
 
-g = GenerateDatabase('btc', 'helpers/gemini_BTCUSD_day.csv')
+g = GenerateDatabase('btc', 'helpers/gemini_BTCUSD_1hr.csv')
 g.main()
-e = ETHDatabase('eth', 'helpers/gemini_ETHUSD_day.csv')
+e = ETHDatabase('eth', 'helpers/gemini_ETHUSD_1hr.csv')
 e.main()

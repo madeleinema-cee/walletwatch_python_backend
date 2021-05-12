@@ -10,7 +10,7 @@ class RetrieveHourlyCryptoToUSDData:
         self.currency = None
 
     def insert_data_to_table(self, exchange_rate):
-        updated_time = datetime.now().strftime('%Y-%m-%d')
+        updated_time = datetime.now().strftime('%Y-%m-%d %H:00:00')
         query = f'''
         insert into {self.currency}_exchange_rate (date, '{self.currency}')
         values ('{updated_time}', '{exchange_rate}')

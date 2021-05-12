@@ -14141,6 +14141,7 @@ class RetrievingBTCBalanceData(GettingBalanceData):
         self.HTTP_request = f'https://blockchain.info/rawaddr/{address}'
         self.token = 'btc'
         self.HTTP_request_currency_exchange = 'https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD'
+        self.time = None
 
     def retrieve_data_from_api(self):
         response = requests.get(self.HTTP_request).json()
@@ -14148,7 +14149,16 @@ class RetrievingBTCBalanceData(GettingBalanceData):
         self.balance = response['final_balance']
         balance_history = {}
         for balance in reversed(response['txs']):
-            time = dt.datetime.fromtimestamp(balance['time']).strftime('%Y-%m-%d')
-            balance_history[time] = balance['balance'] / 100000000
-            self.transaction_history[time] = balance['result'] / 100000000
+            self.time = dt.datetime.fromtimestamp(balance['time']).strftime('%Y-%m-%d %H:00:00')
+            balance_history[self.time] = balance['balance'] / 100000000
+            print(balance['balance'] / 100000000)
+            self.get_transaction_history(balance['result'] / 100000000)
+
         return self.get_balance_data(balance_history)
+
+    def get_transaction_history(self, value):
+        if self.time not in self.transaction_history:
+            self.transaction_history[self.time] = [value]
+        else:
+            self.transaction_history[self.time].append(value)
+
