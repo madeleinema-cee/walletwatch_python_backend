@@ -79,6 +79,6 @@ class GettingBalanceData:
         total_profit = total_profit_from_selling + balance[-1]['y'] - total_invested
         data['total_profit'] = total_profit
         data['total_invested'] = total_invested
-        # data['profit_margin'] = total_profit / total_invested * 100
+        data['profit_margin'] = total_profit / total_invested * 100
         data['final_balance'] = self.balance
         return data
