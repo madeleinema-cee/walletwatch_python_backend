@@ -14144,8 +14144,8 @@ class RetrievingBTCBalanceData(GettingBalanceData):
         self.time = None
 
     def retrieve_data_from_api(self):
-        response = requests.get(self.HTTP_request).json()
-        # response = test_result
+        # response = requests.get(self.HTTP_request).json()
+        response = test_result
         self.balance = response['final_balance'] / 100000000
         balance_history = {}
         for balance in reversed(response['txs']):
