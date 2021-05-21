@@ -1,4 +1,4 @@
-from flask import jsonify, request, abort
+from flask import jsonify, request
 from api import app
 from get_wallet_balance_btc import RetrievingBTCBalanceData
 from get_wallet_balance_eth import RetrievingETHBalanceData

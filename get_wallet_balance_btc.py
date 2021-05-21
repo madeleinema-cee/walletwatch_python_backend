@@ -1,6 +1,6 @@
 import datetime as dt
 import requests
-from genetic_get_wallet_balance import GettingBalanceData
+from generic_get_wallet_balance import GettingBalanceData
 
 test_result = {
     "hash160": "c3eb3e3e76060fd7643014463deba884f94eb31e",
